@@ -1,23 +1,47 @@
 import { Router, type Router as IRouter } from "express";
+import {
+  getAllCities,
+  getCityById,
+  createCity,
+  updateCity,
+  deleteCity,
+  getAllCitiesAdmin,
+} from "../controllers/city.controller";
+import { authenticate, authorize } from "../middleware/auth.middleware";
+import { UserRole } from "../types";
 
 const router: IRouter = Router();
 
-const cities = [
-  { id: "riyadh", name: { ar: "الرياض", en: "Riyadh" }, isActive: true },
-  { id: "jeddah", name: { ar: "جدة", en: "Jeddah" }, isActive: true },
-  { id: "dammam", name: { ar: "الدمام", en: "Dammam" }, isActive: true },
-  { id: "mecca", name: { ar: "مكة", en: "Mecca" }, isActive: true },
-  { id: "medina", name: { ar: "المدينة", en: "Medina" }, isActive: true },
-  { id: "khobar", name: { ar: "الخبر", en: "Khobar" }, isActive: true },
-  { id: "tabuk", name: { ar: "تبوك", en: "Tabuk" }, isActive: true },
-  { id: "abha", name: { ar: "أبها", en: "Abha" }, isActive: true },
-];
+// Public routes
+router.get("/", getAllCities);
+router.get("/:id", getCityById);
 
-router.get("/", (_req, res) => {
-  return res.json({
-    success: true,
-    data: cities,
-  });
-});
+// Admin only routes
+router.post(
+  "/",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  createCity
+);
+router.put(
+  "/:id",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  updateCity
+);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  deleteCity
+);
+
+// Admin endpoint to get all cities (including inactive)
+router.get(
+  "/admin/all",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  getAllCitiesAdmin
+);
 
 export default router;

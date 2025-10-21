@@ -1,20 +1,47 @@
 import { Router, type Router as IRouter } from "express";
+import {
+  getAllCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getAllCategoriesAdmin,
+} from "../controllers/category.controller";
+import { authenticate, authorize } from "../middleware/auth.middleware";
+import { UserRole } from "../types";
 
 const router: IRouter = Router();
 
-const categories = [
-  { id: "import", name: { ar: "استيراد", en: "Import" }, isActive: true },
-  { id: "export", name: { ar: "تصدير", en: "Export" }, isActive: true },
-  { id: "vehicles", name: { ar: "مركبات", en: "Vehicles" }, isActive: true },
-  { id: "fast", name: { ar: "سريع", en: "Fast" }, isActive: true },
-  { id: "other", name: { ar: "أخرى", en: "Other" }, isActive: true },
-];
+// Public routes
+router.get("/", getAllCategories);
+router.get("/:id", getCategoryById);
 
-router.get("/", (_req, res) => {
-  return res.json({
-    success: true,
-    data: categories,
-  });
-});
+// Admin only routes
+router.post(
+  "/",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  createCategory
+);
+router.put(
+  "/:id",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  updateCategory
+);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  deleteCategory
+);
+
+// Admin endpoint to get all categories (including inactive)
+router.get(
+  "/admin/all",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  getAllCategoriesAdmin
+);
 
 export default router;
