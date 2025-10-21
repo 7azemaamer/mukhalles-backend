@@ -15,13 +15,13 @@ const ensureDirectoryExists = (dir: string) => {
 });
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (req, _file, cb) => {
     const type = req.body.type || "documents";
     const dest = path.join(uploadDir, type);
     ensureDirectoryExists(dest);
     cb(null, dest);
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,

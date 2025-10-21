@@ -83,12 +83,12 @@ router.get("/suggestions", async (req, res) => {
       .limit(parseInt(limit as string))
       .lean();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: suggestions,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get suggestions",
     });

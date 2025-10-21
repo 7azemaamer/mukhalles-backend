@@ -197,11 +197,8 @@ const UserSchema = new Schema<IUser>(
 );
 
 // Indexes
-UserSchema.index({ phone: 1 });
-UserSchema.index({ email: 1 });
 UserSchema.index({ role: 1, isActive: 1 });
 UserSchema.index({ "companyProfile.verificationStatus": 1 });
-UserSchema.index({ "companyProfile.crNumber": 1 });
 UserSchema.index({ "individualProfile.city": 1 });
 
 export default mongoose.model<IUser>("User", UserSchema);

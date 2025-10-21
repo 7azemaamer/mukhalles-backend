@@ -17,7 +17,7 @@ router.post("/image", authenticate, upload.single("file"), (req, res) => {
   const type = req.body.type || "documents";
   const fileUrl = `/uploads/${type}/${req.file.filename}`;
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: {
       id: req.file.filename,
@@ -41,7 +41,7 @@ router.post("/document", authenticate, upload.single("file"), (req, res) => {
   const type = req.body.type || "documents";
   const fileUrl = `/uploads/${type}/${req.file.filename}`;
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: {
       id: req.file.filename,

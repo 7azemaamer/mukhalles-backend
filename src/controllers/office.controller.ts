@@ -69,7 +69,10 @@ export const getOffices = async (req: Request, res: Response) => {
   }
 };
 
-export const getOfficeById = async (req: Request, res: Response) => {
+export const getOfficeById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -96,13 +99,13 @@ export const getOfficeById = async (req: Request, res: Response) => {
       granularity: "hour",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: office,
     });
   } catch (error) {
     logger.error("Get office by id error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get office",
     });
@@ -137,20 +140,23 @@ export const trackContactClick = async (req: AuthRequest, res: Response) => {
       granularity: "hour",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Contact click tracked",
     });
   } catch (error) {
     logger.error("Track contact click error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to track contact click",
     });
   }
 };
 
-export const updateOffice = async (req: AuthRequest, res: Response) => {
+export const updateOffice = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -195,14 +201,14 @@ export const updateOffice = async (req: AuthRequest, res: Response) => {
 
     await office.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Office updated successfully",
       data: office,
     });
   } catch (error) {
     logger.error("Update office error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update office",
     });

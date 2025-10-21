@@ -53,7 +53,10 @@ export const getUserBookmarks = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const addBookmark = async (req: AuthRequest, res: Response) => {
+export const addBookmark = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -85,21 +88,24 @@ export const addBookmark = async (req: AuthRequest, res: Response) => {
 
     await Office.findByIdAndUpdate(id, { $inc: { "stats.bookmarks": 1 } });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Office bookmarked successfully",
       isBookmarked: true,
     });
   } catch (error) {
     logger.error("Add bookmark error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to add bookmark",
     });
   }
 };
 
-export const removeBookmark = async (req: AuthRequest, res: Response) => {
+export const removeBookmark = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -118,14 +124,14 @@ export const removeBookmark = async (req: AuthRequest, res: Response) => {
     await Bookmark.findByIdAndDelete(bookmark._id);
     await Office.findByIdAndUpdate(id, { $inc: { "stats.bookmarks": -1 } });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Bookmark removed successfully",
       isBookmarked: false,
     });
   } catch (error) {
     logger.error("Remove bookmark error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to remove bookmark",
     });

@@ -12,13 +12,11 @@ const BookmarkSchema = new Schema<IBookmark>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
     officeId: {
       type: Schema.Types.ObjectId,
       ref: "Office",
       required: true,
-      index: true,
     },
   },
   {

@@ -1,9 +1,17 @@
 import { Response } from "express";
 import { User, Office } from "../models";
-import { AuthRequest, UserRole, VerificationStatus } from "../types";
+import {
+  AuthRequest,
+  UploadStatus,
+  UserRole,
+  VerificationStatus,
+} from "../types";
 import logger from "../utils/logger";
 
-export const registerCompany = async (req: AuthRequest, res: Response) => {
+export const registerCompany = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const {
       nameAr,
@@ -80,21 +88,24 @@ export const registerCompany = async (req: AuthRequest, res: Response) => {
       isActive: false,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Company registered successfully. Awaiting verification.",
       data: user.companyProfile,
     });
   } catch (error) {
     logger.error("Register company error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to register company",
     });
   }
 };
 
-export const getCompanyProfile = async (req: AuthRequest, res: Response) => {
+export const getCompanyProfile = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const user = await User.findById(req.user?.userId);
 
@@ -105,7 +116,7 @@ export const getCompanyProfile = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {
         basicInfo: {
@@ -126,14 +137,17 @@ export const getCompanyProfile = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     logger.error("Get company profile error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get company profile",
     });
   }
 };
 
-export const updateCompanyProfile = async (req: AuthRequest, res: Response) => {
+export const updateCompanyProfile = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const updates = req.body;
     const user = await User.findById(req.user?.userId);
@@ -162,14 +176,14 @@ export const updateCompanyProfile = async (req: AuthRequest, res: Response) => {
 
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Company profile updated successfully",
       data: user.companyProfile,
     });
   } catch (error) {
     logger.error("Update company profile error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update company profile",
     });
@@ -179,7 +193,7 @@ export const updateCompanyProfile = async (req: AuthRequest, res: Response) => {
 export const uploadCompanyDocument = async (
   req: AuthRequest,
   res: Response
-) => {
+): Promise<Response> => {
   try {
     const { documentType } = req.body;
 
@@ -207,14 +221,14 @@ export const uploadCompanyDocument = async (
       fileName: req.file.originalname,
       fileSize: req.file.size,
       mimeType: req.file.mimetype,
-      uploadStatus: "pending",
-      uploadedBy: user._id,
+      uploadStatus: "pending" as UploadStatus,
+      uploadedBy: user.id!,
       uploadedAt: new Date(),
     });
 
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Document uploaded successfully",
       data: {
@@ -224,14 +238,17 @@ export const uploadCompanyDocument = async (
     });
   } catch (error) {
     logger.error("Upload company document error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to upload document",
     });
   }
 };
 
-export const getCompanyServices = async (req: AuthRequest, res: Response) => {
+export const getCompanyServices = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const office = await Office.findOne({ companyId: req.user?.userId });
 
@@ -242,20 +259,23 @@ export const getCompanyServices = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: office.services,
     });
   } catch (error) {
     logger.error("Get company services error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get services",
     });
   }
 };
 
-export const createService = async (req: AuthRequest, res: Response) => {
+export const createService = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { title, description, basePrice, subServices, imageUrl } = req.body;
 
@@ -281,21 +301,24 @@ export const createService = async (req: AuthRequest, res: Response) => {
 
     await office.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Service created successfully",
       data: office.services[office.services.length - 1],
     });
   } catch (error) {
     logger.error("Create service error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to create service",
     });
   }
 };
 
-export const updateService = async (req: AuthRequest, res: Response) => {
+export const updateService = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -309,7 +332,7 @@ export const updateService = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const service = office.services.id(id);
+    const service = office.services.find((s) => s.id?.toString() === id);
 
     if (!service) {
       return res.status(404).json({
@@ -336,21 +359,24 @@ export const updateService = async (req: AuthRequest, res: Response) => {
     (service as any).updatedAt = new Date();
     await office.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Service updated successfully",
       data: service,
     });
   } catch (error) {
     logger.error("Update service error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update service",
     });
   }
 };
 
-export const deleteService = async (req: AuthRequest, res: Response) => {
+export const deleteService = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -366,20 +392,23 @@ export const deleteService = async (req: AuthRequest, res: Response) => {
     office.services = office.services.filter((s) => s._id?.toString() !== id);
     await office.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Service deleted successfully",
     });
   } catch (error) {
     logger.error("Delete service error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to delete service",
     });
   }
 };
 
-export const getDelegate = async (req: AuthRequest, res: Response) => {
+export const getDelegate = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const user = await User.findById(req.user?.userId);
 
@@ -390,20 +419,23 @@ export const getDelegate = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: user.companyProfile.delegate,
     });
   } catch (error) {
     logger.error("Get delegate error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get delegate information",
     });
   }
 };
 
-export const updateDelegate = async (req: AuthRequest, res: Response) => {
+export const updateDelegate = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const updates = req.body;
     const user = await User.findById(req.user?.userId);
@@ -431,14 +463,14 @@ export const updateDelegate = async (req: AuthRequest, res: Response) => {
 
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Delegate information updated successfully",
       data: user.companyProfile.delegate,
     });
   } catch (error) {
     logger.error("Update delegate error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update delegate information",
     });

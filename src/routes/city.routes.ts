@@ -13,8 +13,8 @@ const cities = [
   { id: "abha", name: { ar: "أبها", en: "Abha" }, isActive: true },
 ];
 
-router.get("/", (req, res) => {
-  res.json({
+router.get("/", (_req, res) => {
+  return res.json({
     success: true,
     data: cities,
   });

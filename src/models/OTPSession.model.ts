@@ -39,7 +39,6 @@ const OTPSessionSchema = new Schema<IOTPSession>(
     expiresAt: {
       type: Date,
       required: true,
-      index: true,
     },
   },
   {

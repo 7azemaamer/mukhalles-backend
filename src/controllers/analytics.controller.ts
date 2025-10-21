@@ -3,7 +3,10 @@ import { Office, Review, Analytics } from "../models";
 import { AuthRequest } from "../types";
 import logger from "../utils/logger";
 
-export const getCompanyAnalytics = async (req: AuthRequest, res: Response) => {
+export const getCompanyAnalytics = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -65,7 +68,7 @@ export const getCompanyAnalytics = async (req: AuthRequest, res: Response) => {
       { $sort: { _id: 1 } },
     ]);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {
         overview: {
@@ -85,7 +88,7 @@ export const getCompanyAnalytics = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     logger.error("Get company analytics error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get analytics",
     });

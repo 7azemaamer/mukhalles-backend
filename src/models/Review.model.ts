@@ -65,7 +65,6 @@ const ReviewSchema = new Schema<IReview>(
 // Indexes
 ReviewSchema.index({ officeId: 1, isApproved: 1, createdAt: -1 });
 ReviewSchema.index({ officeId: 1, rating: -1 });
-ReviewSchema.index({ userId: 1 });
 ReviewSchema.index({ "likes.userId": 1 });
 ReviewSchema.index({ isApproved: 1 });
 

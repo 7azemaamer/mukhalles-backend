@@ -61,7 +61,10 @@ export const getOfficeReviews = async (req: Request, res: Response) => {
   }
 };
 
-export const createReview = async (req: AuthRequest, res: Response) => {
+export const createReview = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const { rating, text, serviceTag } = req.body;
@@ -105,21 +108,24 @@ export const createReview = async (req: AuthRequest, res: Response) => {
       ratingCount: reviews.length,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Review submitted successfully",
       data: review,
     });
   } catch (error) {
     logger.error("Create review error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to create review",
     });
   }
 };
 
-export const updateReview = async (req: AuthRequest, res: Response) => {
+export const updateReview = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const { rating, text, serviceTag } = req.body;
@@ -151,21 +157,24 @@ export const updateReview = async (req: AuthRequest, res: Response) => {
       ratingCount: reviews.length,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Review updated successfully",
       data: review,
     });
   } catch (error) {
     logger.error("Update review error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update review",
     });
   }
 };
 
-export const deleteReview = async (req: AuthRequest, res: Response) => {
+export const deleteReview = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -192,20 +201,23 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
       ratingCount: reviews.length,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Review deleted successfully",
     });
   } catch (error) {
     logger.error("Delete review error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to delete review",
     });
   }
 };
 
-export const likeReview = async (req: AuthRequest, res: Response) => {
+export const likeReview = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const userId = new mongoose.Types.ObjectId(req.user!.userId);
@@ -239,14 +251,14 @@ export const likeReview = async (req: AuthRequest, res: Response) => {
     review.likesCount = review.likes.length;
     await review.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       isLiked: true,
       likesCount: review.likesCount,
     });
   } catch (error) {
     logger.error("Like review error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to like review",
     });

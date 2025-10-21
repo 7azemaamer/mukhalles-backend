@@ -10,6 +10,7 @@ interface ISubService {
 
 interface IService {
   _id?: mongoose.Types.ObjectId;
+  id?: mongoose.Types.ObjectId;
   title: string;
   description: string;
   imageUrl?: string;
@@ -136,7 +137,6 @@ const OfficeSchema = new Schema<IOffice>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
     name: { type: String, required: true },
     city: { type: String, required: true },

@@ -3,15 +3,19 @@ import { User } from "../models";
 import { AuthRequest } from "../types";
 import logger from "../utils/logger";
 
-export const getProfile = async (req: AuthRequest, res: Response) => {
+export const getProfile = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
   try {
     const user = await User.findById(req.user?.userId).select("-__v");
 
     if (!user) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: "User not found",
       });
+      return;
     }
 
     res.status(200).json({
@@ -37,17 +41,21 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateProfile = async (req: AuthRequest, res: Response) => {
+export const updateProfile = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
   try {
     const { fullName, email, city, notificationChannel } = req.body;
 
     const user = await User.findById(req.user?.userId);
 
     if (!user) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: "User not found",
       });
+      return;
     }
 
     if (!user.individualProfile) {
@@ -82,22 +90,27 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const uploadProfilePicture = async (req: AuthRequest, res: Response) => {
+export const uploadProfilePicture = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
   try {
     if (!req.file) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "No file uploaded",
       });
+      return;
     }
 
     const user = await User.findById(req.user?.userId);
 
     if (!user) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: "User not found",
       });
+      return;
     }
 
     const avatarUrl = `/uploads/avatars/${req.file.filename}`;
@@ -129,7 +142,7 @@ export const uploadProfilePicture = async (req: AuthRequest, res: Response) => {
 export const getNotificationPreferences = async (
   req: AuthRequest,
   res: Response
-) => {
+): Promise<Response> => {
   try {
     const user = await User.findById(req.user?.userId);
 
@@ -140,7 +153,7 @@ export const getNotificationPreferences = async (
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: user.notificationPreferences || {
         offices: "all",
@@ -154,7 +167,7 @@ export const getNotificationPreferences = async (
     });
   } catch (error) {
     logger.error("Get notification preferences error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get notification preferences",
     });
@@ -164,7 +177,7 @@ export const getNotificationPreferences = async (
 export const updateNotificationPreferences = async (
   req: AuthRequest,
   res: Response
-) => {
+): Promise<Response> => {
   try {
     const {
       offices,
@@ -212,14 +225,14 @@ export const updateNotificationPreferences = async (
 
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Notification preferences updated successfully",
       data: user.notificationPreferences,
     });
   } catch (error) {
     logger.error("Update notification preferences error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update notification preferences",
     });

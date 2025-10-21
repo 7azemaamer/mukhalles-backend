@@ -10,8 +10,8 @@ const categories = [
   { id: "other", name: { ar: "أخرى", en: "Other" }, isActive: true },
 ];
 
-router.get("/", (req, res) => {
-  res.json({
+router.get("/", (_req, res) => {
+  return res.json({
     success: true,
     data: categories,
   });

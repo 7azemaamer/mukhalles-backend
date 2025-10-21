@@ -3,7 +3,7 @@ import { User, Office, Review, AdminLog, Analytics } from "../models";
 import { AuthRequest, VerificationStatus, AdminActionType } from "../types";
 import logger from "../utils/logger";
 
-export const getDashboard = async (req: AuthRequest, res: Response) => {
+export const getDashboard = async (_req: AuthRequest, res: Response) => {
   try {
     const [
       totalUsers,
@@ -112,7 +112,10 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getUserById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -125,20 +128,23 @@ export const getUserById = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: user,
     });
   } catch (error) {
     logger.error("Get user by id error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to get user",
     });
   }
 };
 
-export const updateUserStatus = async (req: AuthRequest, res: Response) => {
+export const updateUserStatus = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const { isActive, reason } = req.body;
@@ -172,20 +178,23 @@ export const updateUserStatus = async (req: AuthRequest, res: Response) => {
       userAgent: req.get("user-agent"),
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "User status updated successfully",
     });
   } catch (error) {
     logger.error("Update user status error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to update user status",
     });
   }
 };
 
-export const verifyCompany = async (req: AuthRequest, res: Response) => {
+export const verifyCompany = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const { status, reason } = req.body;
@@ -226,20 +235,23 @@ export const verifyCompany = async (req: AuthRequest, res: Response) => {
       userAgent: req.get("user-agent"),
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Company verification status updated successfully",
     });
   } catch (error) {
     logger.error("Verify company error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to verify company",
     });
   }
 };
 
-export const featureOffice = async (req: AuthRequest, res: Response) => {
+export const featureOffice = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const { isFeatured, priority } = req.body;
@@ -271,13 +283,13 @@ export const featureOffice = async (req: AuthRequest, res: Response) => {
       userAgent: req.get("user-agent"),
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Office featured status updated successfully",
     });
   } catch (error) {
     logger.error("Feature office error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to feature office",
     });
@@ -327,7 +339,10 @@ export const getReviewsForModeration = async (req: Request, res: Response) => {
   }
 };
 
-export const approveReview = async (req: AuthRequest, res: Response) => {
+export const approveReview = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
     const { isApproved } = req.body;
@@ -360,20 +375,23 @@ export const approveReview = async (req: AuthRequest, res: Response) => {
       userAgent: req.get("user-agent"),
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Review moderation status updated successfully",
     });
   } catch (error) {
     logger.error("Approve review error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to approve review",
     });
   }
 };
 
-export const deleteReview = async (req: AuthRequest, res: Response) => {
+export const deleteReview = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -402,13 +420,13 @@ export const deleteReview = async (req: AuthRequest, res: Response) => {
       userAgent: req.get("user-agent"),
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Review deleted successfully",
     });
   } catch (error) {
     logger.error("Delete review error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to delete review",
     });

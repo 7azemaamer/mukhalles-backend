@@ -9,15 +9,16 @@ import { generateTokens, verifyRefreshToken } from "../utils/jwt";
 import { AuthRequest, UserRole } from "../types";
 import logger from "../utils/logger";
 
-export const sendOTP = async (req: Request, res: Response) => {
+export const sendOTP = async (req: Request, res: Response): Promise<void> => {
   try {
     const { phone, countryCode } = req.body;
 
     if (!phone) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Phone number is required",
       });
+      return;
     }
 
     const fullPhone = `${countryCode || "+966"}${phone}`;
@@ -40,25 +41,30 @@ export const sendOTP = async (req: Request, res: Response) => {
   }
 };
 
-export const verifyOTPController = async (req: Request, res: Response) => {
+export const verifyOTPController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { phone, otp, sessionId, countryCode } = req.body;
 
     if (!phone || !otp || !sessionId) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Phone, OTP, and sessionId are required",
       });
+      return;
     }
 
     const fullPhone = `${countryCode || "+966"}${phone}`;
     const isValid = await verifyOTP(fullPhone, otp, sessionId);
 
     if (!isValid) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Invalid or expired OTP",
       });
+      return;
     }
 
     let user = await User.findOne({ phone: fullPhone });
@@ -73,7 +79,7 @@ export const verifyOTPController = async (req: Request, res: Response) => {
     }
 
     const tokens = generateTokens({
-      userId: user._id.toString(),
+      userId: user.id,
       phone: user.phone,
       role: user.role,
       permissions: [],
@@ -103,25 +109,30 @@ export const verifyOTPController = async (req: Request, res: Response) => {
   }
 };
 
-export const resendOTPController = async (req: Request, res: Response) => {
+export const resendOTPController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { phone, sessionId, countryCode } = req.body;
 
     if (!phone || !sessionId) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Phone and sessionId are required",
       });
+      return;
     }
 
     const fullPhone = `${countryCode || "+966"}${phone}`;
     const success = await resendOTP(fullPhone, sessionId);
 
     if (!success) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Failed to resend OTP. Session may have expired.",
       });
+      return;
     }
 
     res.status(200).json({
@@ -138,29 +149,34 @@ export const resendOTPController = async (req: Request, res: Response) => {
   }
 };
 
-export const refreshToken = async (req: Request, res: Response) => {
+export const refreshToken = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Refresh token required",
       });
+      return;
     }
 
     const decoded = verifyRefreshToken(token);
     const user = await User.findById(decoded.userId);
 
     if (!user || !user.isActive) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Invalid refresh token",
       });
+      return;
     }
 
     const tokens = generateTokens({
-      userId: user._id.toString(),
+      userId: user.id,
       phone: user.phone,
       role: user.role,
       permissions: [],
@@ -179,7 +195,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = async (req: AuthRequest, res: Response) => {
+export const logout = async (_req: AuthRequest, res: Response) => {
   try {
     res.status(200).json({
       success: true,

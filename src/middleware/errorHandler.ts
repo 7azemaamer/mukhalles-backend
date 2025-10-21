@@ -10,7 +10,7 @@ const errorHandler = (
   err: ApiError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";

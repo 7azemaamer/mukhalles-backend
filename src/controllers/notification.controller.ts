@@ -47,7 +47,10 @@ export const getNotifications = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const markAsRead = async (req: AuthRequest, res: Response) => {
+export const markAsRead = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -67,13 +70,13 @@ export const markAsRead = async (req: AuthRequest, res: Response) => {
     notification.readAt = new Date();
     await notification.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Notification marked as read",
     });
   } catch (error) {
     logger.error("Mark notification as read error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to mark notification as read",
     });
