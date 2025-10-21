@@ -65,6 +65,8 @@ export enum AdminActionType {
   SUSPEND_USER = "suspend_user",
   VERIFY_DOCUMENT = "verify_document",
   MODERATE_REVIEW = "moderate_review",
+  CHANGE_USER_ROLE = "change_user_role",
+  BULK_ROLE_UPDATE = "bulk_role_update",
 }
 
 // File Upload Types

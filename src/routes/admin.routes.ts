@@ -11,6 +11,10 @@ import {
   getReviewsForModeration,
   approveReview,
   deleteReview,
+  updateUserRole,
+  bulkUpdateRoles,
+  getRoleHistory,
+  getRoleStatistics,
 } from "../controllers/admin.controller";
 
 const router: IRouter = Router();
@@ -58,6 +62,32 @@ router.delete(
   authenticate,
   authorize(UserRole.ADMIN),
   deleteReview
+);
+
+// Role Management Routes
+router.put(
+  "/users/:id/role",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  updateUserRole
+);
+router.post(
+  "/users/bulk-role-update",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  bulkUpdateRoles
+);
+router.get(
+  "/role-history",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  getRoleHistory
+);
+router.get(
+  "/role-statistics",
+  authenticate,
+  authorize(UserRole.ADMIN, UserRole.MODERATOR),
+  getRoleStatistics
 );
 
 export default router;
